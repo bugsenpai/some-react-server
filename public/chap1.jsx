@@ -1,10 +1,11 @@
 var GreetingMessage = React.createClass({
   render: function(){
     var name = this.props.nameMess;
+    var message = this.props.message;
     return(
       <div>
         <h1>{name}</h1>
-        <p>I feel good now</p>
+        <p>{message}</p>
       </div>
     )
   }
@@ -12,18 +13,32 @@ var GreetingMessage = React.createClass({
 var GreetingForm = React.createClass({
   onFormSubmit: function(e){
     e.preventDefault();
+    var updates = {};
     var name = this.refs.name.value;
-    if (name.length > 0){
-      this.refs.name.value = '';
-      this.props.onNewName(name);
+    var message = this.refs.myTextArea.value;
+    this.refs.name.value = '';
+    this.refs.myTextArea.value = '';
+    if (message.length > 0){
+      updates.message = message;
     }
+    if (name.length > 0) {
+      updates.name = name;
+    }
+    this.props.onUpdateNameAndMessage(updates);
   },
   render: function(){
     return(
       <div>
         <form onSubmit={this.onFormSubmit}>
-          <input type='text' ref='name'></input>
-          <button>Submit</button>
+          <div>
+            <input type='text' ref='name'></input>
+          </div>
+          <div>
+            <textarea ref='myTextArea'></textarea>
+          </div>
+          <div>
+            <button>Submit</button>
+          </div>
         </form>
       </div>
     )
@@ -39,18 +54,22 @@ var GreetingComponent = React.createClass({
   getInitialState: function(){
     return {
       name: this.props.name,
+      message: this.props.message
     }
   }
   ,
-  handleNewName: function(name){
-    this.setState({name})
+  handleNewNameAndMessage: function(updates){
+    this.setState(updates);
   },
   render: function(){
     var name = this.state.name;
+    var message = this.state.message;
     return (
       <div>
-        <GreetingMessage nameMess={name} />
-        <GreetingForm onNewName={this.handleNewName} />
+        <GreetingMessage nameMess={name} message={message}/>
+        <GreetingForm
+          onUpdateNameAndMessage={this.handleNewNameAndMessage}
+        />
       </div>
     )
   }
